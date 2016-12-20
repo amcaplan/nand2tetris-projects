@@ -12,9 +12,18 @@
  */
 
 CHIP PC {
-    IN in[16],load,inc,reset;
+    IN in[16], load, inc, reset;
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Increment if necessary
+    Inc16(in=baseline, out=incremented);
+    Mux16(a=baseline, b=incremented, sel=inc, out=updatedNumber);
+    // Override with new number if loading
+    Mux16(a=updatedNumber, b=in, sel=load, out=current);
+    // Override with zero if reset
+    Mux16(a=current, b=false, sel=reset, out=zeroedCurrent);
+
+    // Store the new number, then project as output and new baseline
+    Register(in=zeroedCurrent, load=true, out=baseline, out=out);
 }
