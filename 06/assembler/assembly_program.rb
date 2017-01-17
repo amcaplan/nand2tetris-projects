@@ -35,14 +35,11 @@ class AssemblyProgram
   end
 
   def present_lines
-    @present_lines ||= lines
-      .lazy
-      .select(&:present?)
-      .map(&:to_pure_code)
+    lines.select(&:present?).map(&:to_pure_code)
   end
 
   def lines
-    io.each_line.map { |line| Line.new(line) }
+    io.each_line.lazy.map { |line| Line.new(line) }
   end
 
   def symbol_table
