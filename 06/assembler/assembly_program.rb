@@ -7,7 +7,11 @@ class AssemblyProgram
   end
 
   def to_hack
-    each_line
+    return enum_for(__method__) unless block_given?
+
+    parsed_commands.reject(&:resolvable?).each do |command|
+      yield command.to_hack
+    end
   end
 
   private
@@ -15,14 +19,6 @@ class AssemblyProgram
 
   def establish_symbols!
     parsed_commands.select(&:resolvable?).each(&:resolve!)
-  end
-
-  def each_line
-    return enum_for(__method__) unless block_given?
-
-    parsed_commands.reject(&:resolvable?).each do |command|
-      yield command.to_hack
-    end
   end
 
   def parsed_commands
@@ -33,9 +29,7 @@ class AssemblyProgram
     line_number = 0
     present_lines.map { |line|
       LineParser.new(line, line_number, symbol_table).command.tap do |command|
-        unless command.resolvable?
-          line_number += 1
-        end
+        line_number += 1 unless command.resolvable?
       end
     }
   end
