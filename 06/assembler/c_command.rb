@@ -66,6 +66,10 @@ class CCommand
     "111#{comp}#{dest}#{jump}"
   end
 
+  def resolvable?
+    false
+  end
+
   private
   attr_reader :line
 
